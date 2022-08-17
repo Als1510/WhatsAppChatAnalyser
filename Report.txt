@@ -1,0 +1,8 @@
+To install the requirements
+pip install -r requirements.txt
+
+To run the application
+Create virtual enviroment
+virtualenv enviroment_name
+.\env\Scripts\activate.ps1
+streamlit run app.py
