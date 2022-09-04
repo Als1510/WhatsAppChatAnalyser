@@ -6,3 +6,7 @@ Create virtual enviroment
 virtualenv enviroment_name
 .\env\Scripts\activate.ps1
 streamlit run app.py
+
+To Do:
+Design Logo
+Create list of features
