@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 
 def seperate_date_time(x):
-  date = pd.to_datetime(x.split(', ')[0],format ="%m/%d/%y").date()
+  date = pd.to_datetime(x.split(', ')[0], format="%m/%d/%y")
   time = x.split(', ')[1].split(' - ')[0]
   return date, time
 
@@ -35,5 +35,16 @@ def preprocess(data, format):
 
   df['user'] = users
   df['message'] = messages
+  df['year'] = df['date'].dt.year
+  df['month'] = df['date'].dt.month_name()
+  df['month_num'] = df['date'].dt.month
+  df['day'] = df['date'].dt.day
+  df['day_name'] = df['date'].dt.day_name()
+  df['date'] = df['date'].dt.date
+  df['hour'] = df['time'].apply(lambda x: x.split(':')[0])
+  df['minute'] = df['time'].apply(lambda x: (x.split(':')[1]).split(' ')[0])
+  if format == '12 Hour':
+    df['meridian'] = df['time'].apply(lambda x: (x.split(':')[1]).split(' ')[1])
+    
   df.drop(columns=['user_message', 'date_time'], inplace=True)
   return df, False
