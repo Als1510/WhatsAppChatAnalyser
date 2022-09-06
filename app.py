@@ -3,13 +3,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import preprocessor, helper
 
-st.set_page_config(page_title='WhatsApp Chat Analyser', layout = 'centered', page_icon = 'logo2.png', initial_sidebar_state = 'expanded')
+st.set_page_config(page_title='WhatsApp Chat Analyser', layout = 'centered', page_icon = 'logo.png', initial_sidebar_state = 'expanded')
 
 st.sidebar.title('WhatsApp Chat Analyser')
 
 uploaded_file = st.sidebar.file_uploader('Choose a file')
 selected = st.sidebar.radio("Time Format of Chat", ('12 Hour', '24 Hour'))
-
 
 if uploaded_file is not None:
   bytes_data = uploaded_file.getvalue()
