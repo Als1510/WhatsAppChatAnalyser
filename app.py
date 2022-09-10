@@ -19,7 +19,7 @@ if uploaded_file is not None:
     else:
       helper.showError('Please select the correct time format of your file. It may be 12 Hour format.')
       
-  user_list =  df['user'].unique().tolist()
+  user_list =  df['User'].unique().tolist()
   user_list.remove('group_notification')
   user_list.sort()
   user_list.insert(0, 'Overall')
@@ -28,24 +28,37 @@ if uploaded_file is not None:
   if st.sidebar.button("Show Analysis"):
 
     st.dataframe(df)
+    # Messages sent by
+    st.header('Message Sent')
 
-    # Messages sent per day
-    st.header('Message sent per day over time period')
-    new_df = helper.countAndGroupMessage(selected_user, df)
-    plost.line_chart(
+    # By Hour
+    st.subheader('By Hour')
+    new_df = helper.hourly_timeline(selected_user, df, selected_format)
+    plost.area_chart(
       new_df,
-      x = 'date',
-      y = 'message_count',
+      x = 'Hour',
+      y = 'Message',
+      pan_zoom='zoom',
+    )
+
+    # By Day
+    st.subheader('By Day')
+    new_df = helper.daily_timeline(selected_user, df)
+    plost.area_chart(
+      new_df,
+      x = 'Date',
+      y = 'Message',
       pan_zoom='zoom'
     )
 
     # Most common words
     st.header('Most common words')
     new_df = helper.most_common_words(selected_user, df)
+    st.dataframe(new_df)
     plost.bar_chart(
       new_df,
-      bar = 'message',
-      value = 'count',
+      bar = 'Message',
+      value = 'Count',
       direction = 'horizontal'
     )
 
