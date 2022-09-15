@@ -112,11 +112,9 @@ if uploaded_file is not None:
 
     st.balloons()
 
-
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown("""
+  <style>
+  .css-eczf16 {display:none}
+  #MainMenu {visibility: hidden;}
+  footer {visibility: hidden;}
+  </style> """, unsafe_allow_html=True)
