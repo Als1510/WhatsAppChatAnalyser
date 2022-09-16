@@ -2,7 +2,7 @@ import re
 import pandas as pd
 
 def seperate_date_time(x):
-  date = pd.to_datetime(x.split(', ')[0], format="%m/%d/%y")
+  date = pd.to_datetime(x.split(', ')[0])
   time = x.split(', ')[1].split(' - ')[0]
   return date, time
 
@@ -39,6 +39,8 @@ def preprocess(data, format):
   df['MonthNum'] = df['Date'].dt.month
   df['Day'] = df['Date'].dt.day
   df['DayName'] = df['Date'].dt.day_name()
+  df['DayOfWeek'] = df['Date'].dt.dayofweek
+  df['WeekNum'] = df['Date'].dt.week
   # df['date'] = df['date'].dt.date
   df['Hour'] = df['Time'].apply(lambda x: x.split(':')[0])
   df['Minute'] = df['Time'].apply(lambda x: (x.split(':')[1]).split(' ')[0])
