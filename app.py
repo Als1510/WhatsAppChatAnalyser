@@ -48,7 +48,10 @@ if uploaded_file is not None:
       st.markdown('<h2 class="primary-color center pb-0">'+str(num_media_messages)+'</h2>',unsafe_allow_html=True)
       st.markdown('<h3 class="center mb-5">Media</h3>',unsafe_allow_html=True)
 
+    # Group Specific
     col1, col2, col3 = st.columns(3)
+
+    removed_left = helper.removed_left(df)
     if selected_user == 'Overall':
       with col1:
         st.markdown('<h2 class="primary-color center pb-0">'+str(len(user_list)-1)+'</h2>',unsafe_allow_html=True)
@@ -57,7 +60,7 @@ if uploaded_file is not None:
         st.markdown('<h2 class="primary-color center pb-0">'+str(diff_days)+'</h2>',unsafe_allow_html=True)
         st.markdown('<h3 class="center mb-1">Days</h3>',unsafe_allow_html=True)
       with col3:
-        st.markdown('<h2 class="primary-color center pb-0">'+str(diff_days)+'</h2>',unsafe_allow_html=True)
+        st.markdown('<h2 class="primary-color center pb-0">'+str(removed_left)+'</h2>',unsafe_allow_html=True)
         st.markdown('<h3 class="center mb-1">Removed/Left</h3>',unsafe_allow_html=True)
     
 

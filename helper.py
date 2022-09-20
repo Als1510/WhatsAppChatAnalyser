@@ -5,6 +5,7 @@ import pandas as pd
 import base64
 from pathlib import Path
 
+# Helper Functions
 def local_css(file_name):
   with open(file_name) as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
@@ -18,6 +19,19 @@ def img_to_bytes(img_path):
   encoded = base64.b64encode(img_bytes).decode()
   return encoded
 
+def seperate(x, seperator):
+  if seperator == 'removed':
+    if x.find(seperator) != -1:
+      return x.split(seperator)[1]
+    else:
+      return x.split('left')[0]
+  else:
+    if x.find(seperator) != -1:
+      return x.split(seperator)[1]
+    else:
+      return x.split('joined')[0]
+
+# Main functions
 def fetch_stats(selected_user, df):
   if selected_user != 'Overall':
     df = df[df['User'] == selected_user]
@@ -30,7 +44,27 @@ def fetch_stats(selected_user, df):
   num_media_messages = df[df['Message'] == '<Media omitted>\n'].shape[0]
   return num_messages, len(words), num_media_messages, diff_days
 
-# Have to work on it
+def removed_left(df):
+  df = df[df['User']=='group_notification']
+  df = df[df['Message'].str.contains('changed|deleted|encrypted|created') == False]
+  removedLeft = df[df['Message'].str.contains('removed|left') ==  True]
+  addedJoined = df[df['Message'].str.contains('added|joined') == True]
+  removedLeft['Status'] = 0
+  addedJoined['Status'] = 1
+  removedLeft['User'] = removedLeft.Message.apply(lambda x: seperate(x, 'removed'))
+  addedJoined['User'] = addedJoined.Message.apply(lambda x: seperate(x, 'added'))
+  new_df = pd.concat([removedLeft, addedJoined])
+  new_df.drop(columns=['Date','Time', 'Message', 'Year', 'Month', 'MonthNum', 'DayOfWeek', 'WeekNum', 'Day', 'Hour', 'DayName', 'Minute'], inplace=True, axis=1)
+  new_df['User'] = new_df['User'].str.lower()
+  new_df['User'] = new_df['User'].str.split(', ')
+  new_df = new_df.explode('User')
+  new_df['User'] = new_df['User'].str.split(' and ')
+  new_df = new_df.explode('User')
+  new_df['User'] = new_df['User'].str.strip()
+  new_df = new_df.groupby('User')['Status'].count().reset_index()
+  new_df['Status'] = new_df.Status.apply(lambda x: x%2 == 0)
+  return len(new_df[new_df.Status==True])
+
 def chat_from(selected_user, df):
   if selected_user != 'Overall':
     df = df[df['User'] == selected_user]
