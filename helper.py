@@ -83,6 +83,20 @@ def most_talkative(df):
   avg_msg = round(user[username]/len(df)*100, 2)
   return username, avg_msg
 
+def long_winded(df):
+  new_df = df[df['User']!='group_notification']
+  grouped_df = new_df.groupby('User')
+  message_length = {}
+  for i in new_df['User'].unique():
+    _sum = 0
+    group = grouped_df.get_group(i)
+    for j in group['Message']:
+      _sum += len(j)
+    message_length[i]=round((_sum/group.shape[0]),2)   
+  name = max(message_length, key=message_length.get)
+  percentage = max(message_length.values())
+  return name, percentage
+
 def hourly_timeline(selected_user, df, format):
   if selected_user != 'Overall':
     df = df[df['User'] == selected_user]
