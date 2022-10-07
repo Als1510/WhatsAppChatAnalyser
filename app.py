@@ -67,39 +67,42 @@ if uploaded_file is not None:
     if selected_user == 'Overall':
       with col1:
         st.markdown('<h2 class="primary-color center pb-0">'+str(len(user_list)-1)+'</h2>',unsafe_allow_html=True)
-        st.markdown('<h3 class="center mb-2">Users</h3>',unsafe_allow_html=True)
+        st.markdown('<h3 class="center mb-5">Users</h3>',unsafe_allow_html=True)
       with col2:
         st.markdown('<h2 class="primary-color center pb-0">'+str(diff_days)+'</h2>',unsafe_allow_html=True)
-        st.markdown('<h3 class="center mb-2">Days</h3>',unsafe_allow_html=True)
+        st.markdown('<h3 class="center mb-5">Days</h3>',unsafe_allow_html=True)
       with col3:
         st.markdown('<h2 class="primary-color center pb-0">'+str(removed_left)+'</h2>',unsafe_allow_html=True)
-        st.markdown('<h3 class="center mb-2">Removed/Left</h3>',unsafe_allow_html=True)
-    
+        st.markdown('<h3 class="center mb-5">Removed/Left</h3>',unsafe_allow_html=True)
+
       # Most talkative
+      username, avg_msg = helper.most_talkative(df)
       img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("msg_icon.png"))
       img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-      username, avg_msg = helper.most_talkative(df)
-      st.markdown('<div class="flex flex-col p-1"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Most Talkative </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center">'+ str(avg_msg) +' % of the total messages</h5></div>',unsafe_allow_html=True)
+      st.markdown('<div class="flex flex-col p-1 mt-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Most Talkative </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center">'+ str(avg_msg) +' % of the total messages</h5></div>',unsafe_allow_html=True)
 
       col1, col2 = st.columns(2)
       with col1:
       # Influencer
+        username, percentage, count = helper.influencer(df)
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("influencer_icon.jpg"))
         img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Influencer </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Media shared (7 photos, videos or voice) 41% </h5></div>',unsafe_allow_html=True)
+        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Influencer </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Media shared ('+ str(count) +' photos, videos or voice) '+ str(percentage) +'% </h5></div>',unsafe_allow_html=True)
 
       # Long Winded
+        lw_user, avg_msg_len, lw_percentage = helper.long_winded(df)
         img_src_left = "data:image/png;base64,{}".format(helper.img_to_bytes("long_letter_icon_left.png"))
         img_src_right = "data:image/png;base64,{}".format(helper.img_to_bytes("long_letter_icon_right.png"))
         img_left = '<img src="' + img_src_left + '" style="height: 50px" margin: 0;>'
         img_right = '<img src="' + img_src_right + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img_left+'<h2 class="p-0 m-0 center"> Long Winded </h2>'+img_right+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center">'+ str(avg_msg) +' of there messages are longer than the others</h5></div>',unsafe_allow_html=True)
+        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img_left+'<h2 class="p-0 m-0 center"> Long Winded </h2>'+img_right+'</div><h4 class="pt-5 pb-5 center">'+ lw_user +'</h4><h5 class="mb-1 center">'+ str(lw_percentage) +'% of there messages are longer than '+ str(avg_msg_len) +' characters</h5></div>',unsafe_allow_html=True)
 
         # Early Bird
+        eb_user, eb_per = helper.early_bird(df, selected_format)
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("early_bird_icon.png"))
         img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Early Bird </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Most of the message are sent in the interval 8 AM - 12 AM '+ str(avg_msg) +'</h5></div>',unsafe_allow_html=True)
-
+        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Early Bird </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ eb_user +'</h4><h5 class="mb-1 center">'+ str(eb_per) +'% of the message are sent in the interval (8 AM - 12 AM)</h5></div>',unsafe_allow_html=True)
+    
       with col2:
         # Professor
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("book_icon.jpg"))
@@ -107,15 +110,40 @@ if uploaded_file is not None:
         st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Professor </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Used the greatest amount of unique words '+ str(avg_msg) +'</h5></div>',unsafe_allow_html=True)
 
         # Emoji Lover
+        el_user, el_per = helper.emoji_lover(df)
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("emoji_icon.png"))
         img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Emoji Lover </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center">'+ str(avg_msg) +' of there words are emoticons</h5></div>',unsafe_allow_html=True)
+        st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Emoji Lover </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ el_user +'</h4><h5 class="mb-1 center">'+ str(el_per) +'% of there words are emoticons</h5></div>',unsafe_allow_html=True)
         
-        # Night owl      
+        # Night owl
+        no_user, no_per = helper.night_owl(df, selected_format)
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("night_owl_icon.jpg"))
         img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Night Owl </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Most of the message are sent in the interval 12 PM - 6 AM '+ str(avg_msg) +'</h5></div>',unsafe_allow_html=True)
-      
+        st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Night Owl </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ no_user +'</h4><h5 class="mb-1 center"> '+ str(no_per) +'% of the message are sent in the interval (12 PM - 6 AM)</h5></div>',unsafe_allow_html=True)
+
+    # Top links shared
+    urls = helper.get_urls(selected_user, df)
+    if urls.empty == False:
+      st.subheader('Top shared links')
+      shape = urls.shape[0]
+      column = 3 if shape>=3 else shape
+      cols = st.columns(column)
+      for i in range(column):
+        with cols[i]:
+          st.markdown('<h5 class="secondary-color center pt-1 pb-2 pr-5 pl-5" style="word-break: break-all;">'+ urls['Urls'][i] +' <span class="tertiary-color">('+str(urls['Count'][i])+')</span></h5>',unsafe_allow_html=True)
+
+    # Top shared emojis
+    emojis = helper.get_emojis(selected_user, df)
+    if emojis.empty == False:
+      st.subheader('Top shared emojis')
+      shape = emojis.shape[0]
+      column = 3 if shape>=3 else shape
+      cols = st.columns(column)
+      for i in range(column):
+        with cols[i]:
+          st.markdown('<h3 class="center pt-1 pb-2 pr-5 pl-5" style="word-break: break-all;">'+ emojis['Emoji'][i] +' <span class="tertiary-color">('+str(emojis['Count'][i])+')</span></h3>',unsafe_allow_html=True)
+          st.markdown('<h5 class="center">'+ emojis['Description'][i] +'</h5>',unsafe_allow_html=True)
+
     # Messages sent by
     st.header('Message Sent')
 
@@ -184,7 +212,6 @@ if uploaded_file is not None:
       use_container_width=True
     )
       
-
     # By author
     st.subheader('By Author')
     new_df = helper.user_chat_percentage(df)
@@ -192,6 +219,27 @@ if uploaded_file is not None:
       data=new_df,
       theta='Percentage',
       color='User'
+    )
+
+    # All shared links
+    st.header('All Shared')
+    st.subheader('Links')
+    new_df = helper.get_urls(selected_user, df)
+    plost.bar_chart(
+      new_df,
+      bar = 'Urls',
+      value = 'Count',
+      direction = 'horizontal'
+    )
+
+    # All shared emojis
+    st.subheader('Emojis')
+    new_df = helper.get_emojis(selected_user, df)
+    plost.bar_chart(
+      new_df,
+      bar = 'EmojiDescription',
+      value = 'Count',
+      direction = 'horizontal'
     )
 
     # Most common words

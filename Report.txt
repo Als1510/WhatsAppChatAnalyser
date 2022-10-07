@@ -9,7 +9,3 @@ virtualenv enviroment_name
 
 To run streamlit app
 streamlit run app.py
-
-To Do:
-Design Logo
-Create list of features
