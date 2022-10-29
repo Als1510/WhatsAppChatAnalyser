@@ -10,8 +10,8 @@ from collections import Counter
 from wordcloud import WordCloud
 from sklearn.feature_extraction.text import CountVectorizer
 
-model = pickle.load(open("semtimental_analysis_model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+model = pickle.load(open("model/semtimental_analysis_model.pkl", "rb"))
+vectorizer = pickle.load(open("model/vectorizer.pkl", "rb"))
 
 # Helper Functions
 def local_css(file_name):

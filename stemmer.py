@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import re
 import os
 try:
@@ -30,17 +24,8 @@ class Stemmer:
         except:
             print("Could not locate the w2vModel file in the directory : "+(modelLocation))
             print("Try to load the w2vModel and try again")
-    
         
-    
-    #  ----------- Stemming functions -----------
-    
-    
-    # takes a word and removes the repeated occurance of characters in that word
-    # outputs word without repeat consecutive occurance of the word
     def RepetitionStemmer(self, word):
-        # find repeted occurence of letters in a word
-        # remove the occurence 
         i=0
         newWord = ''
         while(i <len(word)):
@@ -51,8 +36,6 @@ class Stemmer:
 
         return newWord
 
-    # takes a word2vec model, word and nWords(to run most similar on - higher the better but slower)
-    # output the list of words similar to that word ( including that word passed through repetition stemmer)
     def WordEmbeddingStemmer(self, w2vModel, word, nWords = 10):
 
         try:
