@@ -263,7 +263,7 @@ if uploaded_file is not None:
       )
 
     # Most common words
-    st.header('Most common words')
+    st.subheader('Most common words')
     new_df = helper.most_common_words(selected_user, df)
     plost.bar_chart(
       new_df,
