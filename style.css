@@ -99,4 +99,8 @@ footer { visibility: hidden; }
       padding: 1rem 0rem;
       margin: 0;
    }
+
+   .sentiment{
+    flex-direction: column;
+   }
 }

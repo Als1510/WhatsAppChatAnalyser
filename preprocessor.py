@@ -45,6 +45,6 @@ def preprocess(data, format):
   df['Hour'] = df['Time'].apply(lambda x: x.split(':')[0])
   df['Minute'] = df['Time'].apply(lambda x: (x.split(':')[1]).split(' ')[0])
   if format == '12 Hour':
-    df['Meridian'] = df['Time'].apply(lambda x: (x.split(':')[1]).split(' ')[1])
+    df['Meridian'] = df['Time'].apply(lambda x: (x.split(':')[1]).split(' ')[1]).str.upper()
   df.drop(columns=['UserMessage', 'DateTime'], inplace=True)
   return df, False

@@ -1,15 +1,18 @@
+from gensim.utils import pickle
+from numpy import negative, positive
 import streamlit as st
 import preprocessor, helper
 import matplotlib.pyplot as plt
 from pathlib import Path
 import plost
+import pickle
+import time
 
 st.set_page_config(page_title='WhatsApp Chat Analyser', layout = 'centered', page_icon = 'logo.png', initial_sidebar_state = 'expanded')
 
 helper.local_css("style.css")
 
 st.sidebar.title('WhatsApp Chat Analyser')
-
 uploaded_file = st.sidebar.file_uploader('Choose a file')
 selected_format = st.sidebar.radio("Time Format of Chat", ('12 Hour', '24 Hour'))
 
@@ -41,7 +44,6 @@ if uploaded_file is not None:
   selected_user = st.sidebar.selectbox("Show analysis w.r.t.", user_list)
 
   if st.sidebar.button("Show Analysis"):
-
     # Chatting From
     year, avg_msg, username = helper.chat_from(selected_user, df)
     st.markdown('<h3 class="center mb-2">'+ username + ' have been chatting since ' + '<span class="primary-color">' + str(year) + '</span>' + ' with an average of ' + '<span class="primary-color">' + str(avg_msg) + '</span> message per day!</h3>',unsafe_allow_html=True)
@@ -221,6 +223,22 @@ if uploaded_file is not None:
       color='User'
     )
 
+    st.balloons()
+
+    # Sentimental Analysis
+    with st.spinner('Wait for it...'):
+      time.sleep(5)
+      
+    negative_sentiment, positive_sentiment = helper.sentimental_analysis(selected_user, df)
+    st.header('Sentimental Analysis')
+    img_src_positive = "data:image/png;base64,{}".format(helper.img_to_bytes("positive_face.png"))
+    img_src_negative = "data:image/png;base64,{}".format(helper.img_to_bytes("negative_face.png"))
+    img_src_positive = '<img src="' + img_src_positive + '" style="height: 50px margin: 0;">'
+    img_src_negative = '<img src="' + img_src_negative + '" style="height: 50px margin: 0;">'
+    st.markdown('<div class="flex flex-row p-1 sentiment" style="justify-content: space-around;"><div class="flex flex-col">'+img_src_positive+'<h2 class="center primary-color">Positive</h2><h4 class="pt-3 center">'+ str(positive_sentiment)+'%</h4></div><div class="flex flex-col">'+img_src_negative+'<h2 class="center tertiary-color">Negative</h2><h4 class="pt-3 center">'+ str(negative_sentiment)+'%</h4></div></div>', unsafe_allow_html=True)
+    
+    st.snow()
+
     # All shared links
     st.header('All Shared')
     st.subheader('Links')
@@ -257,5 +275,3 @@ if uploaded_file is not None:
     fig, ax = plt.subplots()
     ax.imshow(df_wc)
     st.pyplot(fig)
-
-    st.balloons()

@@ -1,11 +1,17 @@
-from collections import Counter
-import streamlit as st
-from wordcloud import WordCloud
-import pandas as pd
-import base64
-import emoji
 import re
+import emoji
+import pickle
+import base64
+import stemmer
+import pandas as pd
+import streamlit as st
 from pathlib import Path
+from collections import Counter
+from wordcloud import WordCloud
+from sklearn.feature_extraction.text import CountVectorizer
+
+model = pickle.load(open("semtimental_analysis_model.pkl", "rb"))
+vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
 # Helper Functions
 def local_css(file_name):
@@ -20,6 +26,9 @@ def img_to_bytes(img_path):
   img_bytes = Path(img_path).read_bytes()
   encoded = base64.b64encode(img_bytes).decode()
   return encoded
+
+def remove_emojis(data):
+  return emoji.demojize(data)
 
 def seperate(x, seperator):
   if seperator == 'removed':
@@ -68,6 +77,8 @@ def removed_left(df):
   return len(new_df[new_df.Status==True])
 
 def chat_from(selected_user, df):
+  print("Called chat from")
+  print("*"*20)
   if selected_user != 'Overall':
     df = df[df['User'] == selected_user]
   else:
@@ -310,3 +321,34 @@ def create_wordcloud(selected_user, df):
   new_df['Message'] = new_df['Message'].apply(remove_stop_words)
   df_wc = wc.generate(new_df['Message'].str.cat(sep=" "))
   return df_wc
+
+def text_transformation(words_list):
+  corpus = []
+  myStemmer = stemmer.Stemmer()
+  for item in words_list:
+    new_item = re.sub('[^a-zA-Z]',' ',str(item))
+    new_item = new_item.lower()
+    if ('https://' or 'http://') in new_item:
+      pass
+    else:
+      new_item = new_item.split()
+      for i in new_item:
+        i = myStemmer.stemWord(i)
+        if len(i)>1:
+          corpus.append(str(i))
+  return list(set(corpus))
+
+def sentimental_analysis(selected_user, df):
+  if selected_user != 'Overall':
+    df = df[df['User'] == selected_user]
+  new_df = df[df['Message']!='<Media omitted>\n']
+  new_df = new_df[new_df['Message']!='This message was deleted']
+  new_df['Message'] = new_df['Message'].apply(remove_emojis)
+  words = text_transformation(new_df['Message'])
+  prediction = model.predict(vectorizer.transform(words)).tolist()
+  total = len(prediction)
+  negative = total - prediction.count(1.0)
+  positive = total - negative
+  negative_per = round(negative / total * 100, 2)
+  positive_per = round(positive / total * 100, 2)
+  return negative_per, positive_per
