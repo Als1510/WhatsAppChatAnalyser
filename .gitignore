@@ -2,3 +2,4 @@ env
 .ipynb_checkpoints
 __pycache__
 chats
+model/semtimental_analysis_model.pkl

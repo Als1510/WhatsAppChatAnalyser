@@ -8,7 +8,7 @@ import plost
 import pickle
 import time
 
-st.set_page_config(page_title='WhatsApp Chat Analyser', layout = 'centered', page_icon = 'logo.png', initial_sidebar_state = 'expanded')
+st.set_page_config(page_title='WhatsApp Chat Analyser', layout = 'centered', page_icon = 'img/logo.png', initial_sidebar_state = 'expanded')
 
 helper.local_css("style.css")
 
@@ -241,24 +241,26 @@ if uploaded_file is not None:
 
     # All shared links
     st.header('All Shared')
-    st.subheader('Links')
     new_df = helper.get_urls(selected_user, df)
-    plost.bar_chart(
-      new_df,
-      bar = 'Urls',
-      value = 'Count',
-      direction = 'horizontal'
-    )
+    if new_df.empty == False:
+      st.subheader('Links')
+      plost.bar_chart(
+        new_df,
+        bar = 'Urls',
+        value = 'Count',
+        direction = 'horizontal'
+      )
 
     # All shared emojis
-    st.subheader('Emojis')
     new_df = helper.get_emojis(selected_user, df)
-    plost.bar_chart(
-      new_df,
-      bar = 'EmojiDescription',
-      value = 'Count',
-      direction = 'horizontal'
-    )
+    if new_df.empty == False:
+      st.subheader('Emojis')
+      plost.bar_chart(
+        new_df,
+        bar = 'EmojiDescription',
+        value = 'Count',
+        direction = 'horizontal'
+      )
 
     # Most common words
     st.header('Most common words')
