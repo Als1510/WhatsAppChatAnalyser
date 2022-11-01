@@ -223,57 +223,54 @@ if uploaded_file is not None:
       color='User'
     )
 
-    st.balloons()
-
-    # Sentimental Analysis
     with st.spinner('Wait for more...'):
-      time.sleep(10)
-      
-    negative_sentiment, positive_sentiment = helper.sentimental_analysis(selected_user, df)
-    st.header('Sentimental Analysis')
-    img_src_positive = "data:image/png;base64,{}".format(helper.img_to_bytes("img/positive_face.png"))
-    img_src_negative = "data:image/png;base64,{}".format(helper.img_to_bytes("img/negative_face.png"))
-    img_src_positive = '<img src="' + img_src_positive + '" style="height: 50px margin: 0;">'
-    img_src_negative = '<img src="' + img_src_negative + '" style="height: 50px margin: 0;">'
-    st.markdown('<div class="flex flex-row p-1 sentiment" style="justify-content: space-around;"><div class="flex flex-col">'+img_src_positive+'<h2 class="center primary-color">Positive</h2><h4 class="pt-3 center">'+ str(positive_sentiment)+'%</h4></div><div class="flex flex-col">'+img_src_negative+'<h2 class="center tertiary-color">Negative</h2><h4 class="pt-3 center">'+ str(negative_sentiment)+'%</h4></div></div>', unsafe_allow_html=True)
+      # Sentimental Analysis
+      negative_sentiment, positive_sentiment = helper.sentimental_analysis(selected_user, df)
+      time.sleep(0)
+      st.header('Sentimental Analysis')
+      img_src_positive = "data:image/png;base64,{}".format(helper.img_to_bytes("img/positive_face.png"))
+      img_src_negative = "data:image/png;base64,{}".format(helper.img_to_bytes("img/negative_face.png"))
+      img_src_positive = '<img src="' + img_src_positive + '" style="height: 50px margin: 0;">'
+      img_src_negative = '<img src="' + img_src_negative + '" style="height: 50px margin: 0;">'
+      st.markdown('<div class="flex flex-row p-1 sentiment" style="justify-content: space-around;"><div class="flex flex-col">'+img_src_positive+'<h2 class="center primary-color">Positive</h2><h4 class="pt-3 center">'+ str(positive_sentiment)+'%</h4></div><div class="flex flex-col">'+img_src_negative+'<h2 class="center tertiary-color">Negative</h2><h4 class="pt-3 center">'+ str(negative_sentiment)+'%</h4></div></div>', unsafe_allow_html=True)
     
-    st.snow()
+      # All shared links
+      st.header('All Shared')
+      new_df = helper.get_urls(selected_user, df)
+      if new_df.empty == False:
+        st.subheader('Links')
+        plost.bar_chart(
+          new_df,
+          bar = 'Urls',
+          value = 'Count',
+          direction = 'horizontal'
+        )
 
-    # All shared links
-    st.header('All Shared')
-    new_df = helper.get_urls(selected_user, df)
-    if new_df.empty == False:
-      st.subheader('Links')
+      # All shared emojis
+      new_df = helper.get_emojis(selected_user, df)
+      if new_df.empty == False:
+        st.subheader('Emojis')
+        plost.bar_chart(
+          new_df,
+          bar = 'EmojiDescription',
+          value = 'Count',
+          direction = 'horizontal'
+        )
+
+      # Most common words
+      st.subheader('Most common words')
+      new_df = helper.most_common_words(selected_user, df)
       plost.bar_chart(
         new_df,
-        bar = 'Urls',
+        bar = 'Message',
         value = 'Count',
         direction = 'horizontal'
       )
 
-    # All shared emojis
-    new_df = helper.get_emojis(selected_user, df)
-    if new_df.empty == False:
-      st.subheader('Emojis')
-      plost.bar_chart(
-        new_df,
-        bar = 'EmojiDescription',
-        value = 'Count',
-        direction = 'horizontal'
-      )
+      # Create word cloud
+      df_wc = helper.create_wordcloud(selected_user, df)
+      fig, ax = plt.subplots()
+      ax.imshow(df_wc)
+      st.pyplot(fig)
 
-    # Most common words
-    st.subheader('Most common words')
-    new_df = helper.most_common_words(selected_user, df)
-    plost.bar_chart(
-      new_df,
-      bar = 'Message',
-      value = 'Count',
-      direction = 'horizontal'
-    )
-
-    # Create word cloud
-    df_wc = helper.create_wordcloud(selected_user, df)
-    fig, ax = plt.subplots()
-    ax.imshow(df_wc)
-    st.pyplot(fig)
+      st.balloons()
