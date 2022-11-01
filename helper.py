@@ -283,9 +283,13 @@ def most_common_words(selected_user, df):
   words = []
 
   for message in new_df['Message']:
-    for word in message.lower().split():
-      if word not in stop_words:
-        words.append(word)
+    message = re.sub('[^A-Za-z\s]','',message)
+    if message == '':
+      pass
+    else:
+      for word in message.lower().split():
+        if word not in stop_words:
+          words.append(word)
   
   most_common_df = pd.DataFrame(Counter(words).most_common(50), columns=['Message', 'Count'])
   most_common_df.sort_values('Count')
