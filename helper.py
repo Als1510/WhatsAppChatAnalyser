@@ -310,6 +310,7 @@ def create_wordcloud(selected_user, df):
     df = df[df['User'] == selected_user]
   new_df = df[df['User'] != 'group_notification']
   new_df = new_df[new_df['Message'] != '<Media omitted>\n']
+  new_df = new_df[new_df['Message'] != 'This message was deleted\n']
   
   f = open('stop_hinglish.txt')
   stop_words = f.read()
@@ -330,8 +331,8 @@ def text_transformation(words_list):
   corpus = []
   myStemmer = stemmer.Stemmer()
   for item in words_list:
-    new_item = re.sub('[^a-zA-Z]',' ',str(item))
-    new_item = new_item.lower()
+    new_item = item.lower()
+    new_item = re.sub('[^a-z]',' ', str(new_item))
     if ('https://' or 'http://') in new_item:
       pass
     else:
@@ -339,14 +340,14 @@ def text_transformation(words_list):
       for i in new_item:
         i = myStemmer.stemWord(i)
         if len(i)>1:
-          corpus.append(str(i))
+          corpus.append(re.sub('[^a-z]','', i))
   return list(set(corpus))
 
 def sentimental_analysis(selected_user, df):
   if selected_user != 'Overall':
     df = df[df['User'] == selected_user]
   new_df = df[df['Message']!='<Media omitted>\n']
-  new_df = new_df[new_df['Message']!='This message was deleted']
+  new_df = new_df[new_df['Message']!='This message was deleted\n']
   new_df['Message'] = new_df['Message'].apply(remove_emojis)
   words = text_transformation(new_df['Message'])
   prediction = model.predict(vectorizer.transform(words)).tolist()
