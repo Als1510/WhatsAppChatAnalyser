@@ -213,15 +213,16 @@ if uploaded_file is not None:
       color='#ff9800',
       use_container_width=True
     )
-      
+    
     # By author
-    st.subheader('By Author')
-    new_df = helper.user_chat_percentage(df)
-    plost.donut_chart(
-      data=new_df,
-      theta='Percentage',
-      color='User'
-    )
+    if selected_user == 'Overall':
+      st.subheader('By Author')
+      new_df = helper.user_chat_percentage(df)
+      plost.donut_chart(
+        data=new_df,
+        theta='Percentage',
+        color='User'
+      )
 
     with st.spinner('Wait for more...'):
       # Sentimental Analysis

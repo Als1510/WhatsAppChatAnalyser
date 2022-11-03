@@ -210,7 +210,8 @@ def hourly_timeline(selected_user, df, format):
   
   new_df['Message'] = [1] * new_df.shape[0]
   if format == '12 Hour':
-    new_df['Hour'] = new_df['Hour'].astype(str) + ' ' + new_df['Meridian'].astype(str)
+    new_df['Hour'] = new_df['Hour'].apply(lambda x: ('0'+str(x)) if (len(x)<2) else x )
+    new_df['Hour'] = new_df['Meridian'].astype(str) + ' ' + new_df['Hour'].astype(str) 
     new_df = new_df.groupby('Hour').sum().reset_index()
   else:
     new_df = new_df.groupby('Hour').sum().reset_index()
