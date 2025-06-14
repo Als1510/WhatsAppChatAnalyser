@@ -40,7 +40,7 @@ def preprocess(data, format):
   df['Day'] = df['Date'].dt.day
   df['DayName'] = df['Date'].dt.day_name()
   df['DayOfWeek'] = df['Date'].dt.dayofweek
-  df['WeekNum'] = df['Date'].dt.week
+  df['WeekNum'] = df['Date'].dt.isocalendar().week
   # df['date'] = df['date'].dt.date
   df['Hour'] = df['Time'].apply(lambda x: x.split(':')[0])
   df['Minute'] = df['Time'].apply(lambda x: (x.split(':')[1]).split(' ')[0])

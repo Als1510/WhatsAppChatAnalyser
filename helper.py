@@ -2,12 +2,12 @@ import re
 import emoji
 import pickle
 import base64
-import stemmer
 import pandas as pd
 import streamlit as st
 from pathlib import Path
 from collections import Counter
 from wordcloud import WordCloud
+from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import CountVectorizer
 
 model = pickle.load(open("model/semtimental_analysis_model.pkl", "rb"))
@@ -142,10 +142,15 @@ def influencer(df):
       if '<Media omitted>' in i:
         count += 1
     inf_dict[name]=count
+  if not inf_dict:
+    return None, 0.0, 0
   name = max(inf_dict, key=inf_dict.get)
   name_df = df[df['User']==name]
+  total_msgs = name_df.shape[0]
+  if total_msgs == 0:
+    return name, 0.0, inf_dict[name]
   percent = (inf_dict[name]/name_df.shape[0])*100
-  return name, round(percent,2), inf_dict[name]
+  return name,round(percent,2), inf_dict[name]
 
 def long_winded(df):
   df = df[df['User'] != 'group_notification']
@@ -212,9 +217,7 @@ def hourly_timeline(selected_user, df, format):
   if format == '12 Hour':
     new_df['Hour'] = new_df['Hour'].apply(lambda x: ('0'+str(x)) if (len(x)<2) else x )
     new_df['Hour'] = new_df['Meridian'].astype(str) + ' ' + new_df['Hour'].astype(str) 
-    new_df = new_df.groupby('Hour').sum().reset_index()
-  else:
-    new_df = new_df.groupby('Hour').sum().reset_index()
+  new_df = new_df.groupby('Hour')['Message'].sum().reset_index()
   return new_df
 
 def daily_timeline(selected_user, df):
@@ -229,11 +232,11 @@ def weekly_timeline(selected_user, df):
     df = df[df['User'] == selected_user]
   new_df = df[df['User'] != 'group_notification']
   new_df  = df.groupby(['Year','Month','WeekNum'], sort=False)['Message'].count().reset_index()
-  week = []
-  for i in range(len(new_df)):
-    week.append(str(new_df['WeekNum'][i]) + " - " + new_df['Month'][i] + " - " + str(new_df['Year'][i]))
-  new_df['Week'] = week
-  new_df['Week'] = new_df[['WeekNum', 'Week']].apply(lambda x: "Week 0"+x['Week'] if x['WeekNum']<10 else "Week "+x['Week'], axis=1)
+  new_df['Week'] = new_df.apply(
+    lambda row: f"Week 0{row['WeekNum']} - {row['Month']} - {row['Year']}"
+    if row['WeekNum'] < 10 else f"Week {row['WeekNum']} - {row['Month']} - {row['Year']}",
+    axis=1
+  )
   new_df.sort_values(['WeekNum', 'Month', 'Year'], inplace=True)
   return new_df
 
@@ -330,18 +333,17 @@ def create_wordcloud(selected_user, df):
 
 def text_transformation(words_list):
   corpus = []
-  myStemmer = stemmer.Stemmer()
+  stemmer = PorterStemmer()
   for item in words_list:
     new_item = item.lower()
-    new_item = re.sub('[^a-z]',' ', str(new_item))
-    if ('https://' or 'http://') in new_item:
-      pass
-    else:
-      new_item = new_item.split()
-      for i in new_item:
-        i = myStemmer.stemWord(i)
-        if len(i)>1:
-          corpus.append(re.sub('[^a-z]','', i))
+    new_item = re.sub(r'[^a-z\s]', ' ', new_item)
+    if 'http://' in new_item or 'https://' in new_item:
+      continue
+    words = new_item.split()
+    for word in words:
+      word = stemmer.stem(word)
+      if len(word) > 1:
+        corpus.append(word)
   return list(set(corpus))
 
 def sentimental_analysis(selected_user, df):

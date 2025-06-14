@@ -1,12 +1,10 @@
-from gensim.utils import pickle
-from numpy import negative, positive
+import time
+import plost
 import streamlit as st
+from pathlib import Path
 import preprocessor, helper
 import matplotlib.pyplot as plt
-from pathlib import Path
-import plost
-import pickle
-import time
+from numpy import negative, positive
 
 st.set_page_config(page_title='WhatsApp Chat Analyser', layout = 'centered', page_icon = 'img/logo.png', initial_sidebar_state = 'expanded')
 
@@ -38,7 +36,8 @@ if uploaded_file is not None:
       helper.showError('Please select the correct time format of your file. It may be 12 Hour format.')
       
   user_list =  df['User'].unique().tolist()
-  user_list.remove('group_notification')
+  if 'group_notification' in user_list:
+    user_list.remove('group_notification')
   user_list.sort()
   user_list.insert(0, 'Overall')
   selected_user = st.sidebar.selectbox("Show analysis w.r.t.", user_list)
@@ -89,7 +88,7 @@ if uploaded_file is not None:
         username, percentage, count = helper.influencer(df)
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("img/influencer_icon.jpg"))
         img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Influencer </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Media shared ('+ str(count) +' photos, videos or voice) '+ str(percentage) +'% </h5></div>',unsafe_allow_html=True)
+        st.markdown('<div class="flex flex-col p-1 pr-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Influencer </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username[0] +'</h4><h5 class="mb-1 center"> Media shared ('+ str(count) +' photos, videos or voice) '+ str(percentage) +'% </h5></div>',unsafe_allow_html=True)
 
       # Long Winded
         lw_user, avg_msg_len, lw_percentage = helper.long_winded(df)
@@ -109,7 +108,7 @@ if uploaded_file is not None:
         # Professor
         img_src = "data:image/png;base64,{}".format(helper.img_to_bytes("img/book_icon.jpg"))
         img = '<img src="' + img_src + '" style="height: 50px" margin: 0;>'
-        st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Professor </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username +'</h4><h5 class="mb-1 center"> Used the greatest amount of unique words '+ str(avg_msg) +'</h5></div>',unsafe_allow_html=True)
+        st.markdown('<div class="flex flex-col p-1 pl-2"><div class="flex flex-row">'+img+'<h2 class="p-0 m-0 center"> Professor </h2>'+img+'</div><h4 class="pt-5 pb-5 center">'+ username[0] +'</h4><h5 class="mb-1 center"> Used the greatest amount of unique words '+ str(avg_msg) +'</h5></div>',unsafe_allow_html=True)
 
         # Emoji Lover
         el_user, el_per = helper.emoji_lover(df)
