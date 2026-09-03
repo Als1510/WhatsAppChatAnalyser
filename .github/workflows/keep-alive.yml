@@ -1,0 +1,17 @@
+name: Keep Streamlit App Awake
+
+on:
+  schedule:
+    # Runs every 8 hours — comfortably under Streamlit's 12-hour sleep threshold
+    - cron: '0 */8 * * *'
+  workflow_dispatch:
+    # Lets you manually trigger a ping from the Actions tab if you ever need to
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the app to keep it awake
+        run: |
+          echo "Pinging WhatsApp Chat Analyser..."
+          curl -sSL -o /dev/null -w "HTTP status: %{http_code}\n" https://whatsappchatsanalyser.streamlit.app/
