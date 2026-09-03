@@ -13,5 +13,16 @@ jobs:
     steps:
       - name: Ping the app to keep it awake
         run: |
-          echo "Pinging WhatsApp Chat Analyser..."
-          curl -sSL -o /dev/null -w "HTTP status: %{http_code}\n" https://whatsappchatsanalyser.streamlit.app/
+          npm install playwright
+          npx playwright install --with-deps chromium
+          node -e "
+            const { chromium } = require('playwright');
+            (async () => {
+              const browser = await chromium.launch();
+              const page = await browser.newPage();
+              await page.goto('https://whatsappchatsanalyser.streamlit.app/', { waitUntil: 'networkidle', timeout: 60000 });
+              await page.waitForTimeout(5000);
+              console.log('Pinged successfully:', page.url());
+              await browser.close();
+            })();
+          "
